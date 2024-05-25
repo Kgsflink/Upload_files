@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"]:focus {
+            border-color: #66afe9;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        #progress {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Files</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="files" id="fileInput" multiple>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="progress"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData();
+            var files = document.getElementById('fileInput').files;
+            for (var i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload');
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    var percentComplete = (e.loaded / e.total) * 100;
+                    document.getElementById('progress').innerHTML = 'Uploading... ' + percentComplete.toFixed(2) + '%';
+                }
+            };
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    document.getElementById('progress').innerHTML = 'Upload complete!';
+                } else {
+                    document.getElementById('progress').innerHTML = 'Upload failed!';
+                }
+            };
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
